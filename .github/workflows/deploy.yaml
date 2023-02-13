@@ -1,0 +1,38 @@
+name: deploy
+
+concurrency:
+  group: "publish-${{ github.ref }}"
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ master,staging ]
+  pull_request:
+  workflow_dispatch:  
+    inputs:
+      latest_tag:
+        description: 'type yes for building latest tag'
+        default: 'no'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, build]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+    - name: Download dependencies
+      run: |
+        npm install -g @graphprotocol/graph-cli
+    - name: Generate config file and build project 
+      run: |
+        graph codegen
+        graph build
+    - name: Run tests
+      run: |
+        graph test
+    - name: Deploy project
+      run: |
+        graph auth --studio ${{ secrets.SubgraphAPIKey }}
+        graph deploy --studio bridge_subgraph --version-label ${{ github.ref }}
+        
