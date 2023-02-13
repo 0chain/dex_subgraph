@@ -21,9 +21,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v3
+      with:
+        node-version: 16
     - name: Download dependencies
       run: |
         npm install -g @graphprotocol/graph-cli
+        npm install
     - name: Generate config file and build project 
       run: |
         graph codegen
