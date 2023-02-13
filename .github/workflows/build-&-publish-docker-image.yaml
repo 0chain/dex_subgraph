@@ -8,7 +8,7 @@ on:
   push:
     branches: [ master,staging ]
   pull_request:
-  workflow_dispatch:
+  workflow_dispatch:  
     inputs:
       latest_tag:
         description: 'type yes for building latest tag'
@@ -20,11 +20,11 @@ jobs:
     runs-on: [self-hosted, build]
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
     - name: Build the project and generate config file
-      uses: actions/setup-node@v3
       run: |
         npm run build && npm run codegen
-    - name: Publish config file to IPFS
+    # - name: Publish config file to IPFS
 
   dockerize_authorizer:
     runs-on: [self-hosted, build]
