@@ -1,0 +1,8 @@
+{
+  "goerli": {
+    "Bridge": {
+      "address": "0x2405e40161ea6da91AE0e95061e7A8462b4D5eEa",
+      "startBlock": 0
+    }
+  }
+}
