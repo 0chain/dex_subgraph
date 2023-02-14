@@ -36,6 +36,6 @@ jobs:
         graph test
     - name: Deploy project
       run: |
-        graph auth --studio ${{ secrets.SubgraphAPIKey }}
+        graph auth --studio ${{ secrets.SUBGRAPH_API_KEY }}
         graph deploy --studio bridge_subgraph --version-label ${{ github.ref }}
         
