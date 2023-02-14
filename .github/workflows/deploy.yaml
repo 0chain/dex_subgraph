@@ -23,6 +23,13 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 16
+    - name: Get the version
+      id: get_version
+      run: |
+        BRANCH=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')
+        SHORT_SHA=$(echo $GITHUB_SHA | head -c 8)
+        echo ::set-output name=BRANCH::${BRANCH}
+        echo ::set-output name=VERSION::${BRANCH}-${SHORT_SHA} 
     - name: Download dependencies
       run: |
         npm install -g @graphprotocol/graph-cli
