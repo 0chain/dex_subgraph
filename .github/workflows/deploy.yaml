@@ -37,5 +37,4 @@ jobs:
     - name: Deploy project
       run: |
         graph auth --studio ${{ secrets.SUBGRAPH_API_KEY }}
-        graph deploy --studio bridge_subgraph --version-label ${{ github.ref }}
-        
+        graph deploy --studio bridge_subgraph --version-label ${{ steps.get_version.outputs.VERSION }}
