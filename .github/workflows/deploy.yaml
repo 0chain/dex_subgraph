@@ -1,0 +1,47 @@
+name: deploy
+
+concurrency:
+  group: "publish-${{ github.ref }}"
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ master,staging ]
+  pull_request:
+  workflow_dispatch:  
+    inputs:
+      latest_tag:
+        description: 'type yes for building latest tag'
+        default: 'no'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, build]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: Get the version
+      id: get_version
+      run: |
+        BRANCH=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')
+        SHORT_SHA=$(echo $GITHUB_SHA | head -c 8)
+        echo ::set-output name=BRANCH::${BRANCH}
+        echo ::set-output name=VERSION::${BRANCH}-${SHORT_SHA} 
+    - name: Download dependencies
+      run: |
+        npm install -g @graphprotocol/graph-cli
+        npm install
+    - name: Generate config file and build project 
+      run: |
+        graph codegen
+        graph build
+    - name: Run tests
+      run: |
+        graph test
+    - name: Deploy project
+      run: |
+        graph auth --studio ${{ secrets.SUBGRAPH_API_KEY }}
+        graph deploy --studio bridge_subgraph --version-label ${{ steps.get_version.outputs.VERSION }}
