@@ -1,6 +1,6 @@
 specVersion: 0.0.5
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum
     name: Bridge
@@ -20,7 +20,7 @@ dataSources:
         - OwnershipTransferred
       abis:
         - name: Bridge
-          file: ./abis/Bridge.json
+          file: Bridge/abis/Bridge.json
       eventHandlers:
         - event: AuthorizersTransferred(indexed address,indexed address)
           handler: handleAuthorizersTransferred
@@ -30,4 +30,4 @@ dataSources:
           handler: handleMinted
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
-      file: ./src/bridge.ts
+      file: Bridge/Bridge.wasm
