@@ -6,7 +6,7 @@ dataSources:
     name: Bridge
     network: goerli
     source:
-      address: "0x2405e40161ea6da91AE0e95061e7A8462b4D5eEa"
+      address: "0x443FE31e21E3cB3855056251727881E3d67dB97a"
       abi: Bridge
       startBlock: 0
     mapping:
@@ -24,7 +24,7 @@ dataSources:
       eventHandlers:
         - event: AuthorizersTransferred(indexed address,indexed address)
           handler: handleAuthorizersTransferred
-        - event: Burned(indexed address,uint256,indexed bytes,indexed uint256)
+        - event: Burned(indexed address,uint256,bytes,indexed uint256)
           handler: handleBurned
         - event: Minted(indexed address,uint256,bytes,indexed uint256)
           handler: handleMinted

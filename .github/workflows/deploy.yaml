@@ -40,7 +40,7 @@ jobs:
         graph build
     - name: Run tests
       run: |
-        graph test
+        graph test . -v 0.5.4
     - name: Deploy project
       run: |
         graph auth --studio ${{ secrets.SUBGRAPH_API_KEY }}
