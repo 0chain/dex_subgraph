@@ -6,7 +6,7 @@ dataSources:
     name: Bridge
     network: goerli
     source:
-      address: "0x2405e40161ea6da91AE0e95061e7A8462b4D5eEa"
+      address: "0xa358ADf3864Ea36EdeccB9d4c46EEeb9C02C1ed9"
       abi: Bridge
       startBlock: 0
     mapping:
