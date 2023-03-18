@@ -38,6 +38,7 @@ jobs:
       run: |
         graph codegen
         graph build
+        sudo apt-get install libpq-dev -y
     - name: Run tests
       run: |
         graph test . -v 0.5.4
