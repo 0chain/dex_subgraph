@@ -1,3 +1,5 @@
+# THIS FILE SHOULD BE USED FOR CI DEPLOYMENT ONLY
+
 specVersion: 0.0.5
 schema:
   file: ./schema.graphql
@@ -6,10 +8,10 @@ features:
   - ipfsOnEthereumContracts
 dataSources:
   - kind: ethereum
-    name: Bridge
-    network: goerli
+    name: 0chain/mainnet/bridge
+    network: ""
     source:
-      address: "0xa358ADf3864Ea36EdeccB9d4c46EEeb9C02C1ed9"
+      address: ""
       abi: Bridge
       startBlock: 0
     mapping:
