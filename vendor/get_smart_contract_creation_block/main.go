@@ -81,7 +81,6 @@ func init() {
 }
 
 func main() {
-
 	if len(*ethereumNodeURL) == 0 {
 		log.Fatal("Ethereum node URL is required to be specified by 'ethereum_node_url' param")
 	}
