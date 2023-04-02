@@ -1,8 +1,10 @@
-graph_node := $(or $(graph_node), '')
+graph_deploy := $(or $(graph_deploy), '')
 graph_index := $(or $(graph_index), '')
 ethereum_node_url := $(or $(ethereum_node_url), '')
-network := $(or $(network), 'sepolia')
+network := $(or $(network), 'goerli')
 smart_contract_address := $(or $(smart_contract_address), '')
+
+.ONESHELL:
 
 .PHONY: help
 .DEFAULT_GOAL := help
@@ -12,7 +14,9 @@ help:
 .PHONY: prepare
 prepare: ## Install prerequisites
 	@apt update
-	@apt install nodejs npm yq jq -y
+	@apt install nodejs npm jq -y
+	@wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+	@chmod a+x /usr/local/bin/yq
 
 	@npm install -g @graphprotocol/graph-cli
 	@npm install
@@ -22,12 +26,14 @@ test: ## Run tests
 	@graph test . -v 0.5.4
 
 .PHONY: build
-build: ## Build subgraph
+build: prepare ## Build subgraph
 ifneq ($(smart_contract_address), '')
 ifneq ($(ethereum_node_url), '')
-	BLOCK_NUMBER := $(shell make -c vendor/get_smart_contract_creation_block run ethereum_node_url=$$(ethereum_node_url) smart_contract_address=$$(smart_contract_address))
-ifneq ($(BLOCK_NUMBER), 'null')
-	@yq e -i '.dataSources[0].source.startBlock = "$(BLOCK_NUMBER)"' subgraph.yaml
+	@make -C vendor/get_smart_contract_creation_block build
+	$(eval BLOCK_NUMBER = $(shell ./vendor/tools/get_smart_contract_creation_block/get_smart_contract_creation_block --ethereum_node_url=$(ethereum_node_url) \
+		--smart_contract_address=$(smart_contract_address)))
+ifeq ($(shell echo $(BLOCK_NUMBER) | grep -E "^[0-9]+$$"),$(BLOCK_NUMBER))	
+	@yq e -i '.dataSources[0].source.startBlock = $(BLOCK_NUMBER)' subgraph.yaml
 	@yq e -i '.dataSources[0].network = "$(network)"' subgraph.yaml
 	@yq e -i '.dataSources[0].source.address = "$(smart_contract_address)"' subgraph.yaml
 	@graph codegen
@@ -43,10 +49,15 @@ else
 endif
 
 .PHONY: deploy
-deploy: prepare build test ## Deploy subgraph
-ifneq ($(graph_node), '')
-	@graph create -g $(graph_node) dex_subgraph 
-	@graph deploy -g $(graph_node) --product hosted_service --version-label  0.0.1 dex_subgraph
+deploy: build test ## Deploy subgraph
+ifneq ($(graph_deploy), '')
+ifneq ($(graph_index), '')
+	@graph create -g $(graph_deploy) dex_subgraph 
+	@graph deploy -g $(graph_deploy) --product hosted-service --version-label 0.0.1 dex_subgraph
+	@./vendor/bin/wait_until_synced.sh $(graph_index) "dex_subgraph"
 else
-	@echo "Graph node URL is required to be specified with the help of 'graph_node' parameter"
+	@echo "Graph node index URL is required to be specified with the help of 'graph_index' parameter"
+endif
+else
+	@echo "Graph node deploy URL is required to be specified with the help of 'graph_deploy' parameter"
 endif

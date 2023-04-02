@@ -1,19 +1,17 @@
-# THIS FILE SHOULD BE USED FOR GNU MAKE DEPLOYMENT ONLY
-
 specVersion: 0.0.5
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 features:
   - fullTextSearch
   - ipfsOnEthereumContracts
 dataSources:
   - kind: ethereum
     name: 0chain/dex
-    network: "" # Should be set by Makefile script
+    network: goerli
     source:
-      address: "" # Should be set by Makefile script
+      address: "0xa358ADf3864Ea36EdeccB9d4c46EEeb9C02C1ed9"
       abi: Bridge
-      startBlock: 0 # Should be set by Makefile script
+      startBlock: 8671992
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -25,7 +23,7 @@ dataSources:
         - OwnershipTransferred
       abis:
         - name: Bridge
-          file: ./abis/Bridge.json
+          file: 0chain/dex/abis/Bridge.json
       eventHandlers:
         - event: AuthorizersTransferred(indexed address,indexed address)
           handler: handleAuthorizersTransferred
@@ -35,4 +33,4 @@ dataSources:
           handler: handleMinted
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
-      file: ./src/bridge.ts
+      file: 0chain/dex/0chain/dex.wasm

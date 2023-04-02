@@ -5,7 +5,7 @@ import {
   Burned,
   Minted,
   OwnershipTransferred
-} from "../generated/Bridge/Bridge"
+} from "../generated/0chain/dex/Bridge"
 
 export function createAuthorizersTransferredEvent(
   previousAuthorizers: Address,

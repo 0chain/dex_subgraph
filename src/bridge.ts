@@ -3,7 +3,7 @@ import {
   Burned as BurnedEvent,
   Minted as MintedEvent,
   OwnershipTransferred as OwnershipTransferredEvent
-} from "../generated/Bridge/Bridge"
+} from "../generated/0chain/dex/Bridge"
 import {
   AuthorizersTransferred,
   Burned,
