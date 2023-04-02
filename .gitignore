@@ -3,5 +3,3 @@ node_modules/**
 build/**
 
 generated/**
-
-**/get_smart_contract_creation_block
