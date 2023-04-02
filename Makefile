@@ -25,11 +25,12 @@ test: ## Run tests
 build: ## Build smart contracts
 ifneq ($(smart_contract_address), '')
 ifneq ($(ethereum_node_url), '')
-	BLOCK_NUMBER := $(shell curl --request POST \
-		--url $(ethereum_node_url) \
-		--header 'accept: application/json' \
-		--header 'content-type: application/json' \
-		--data '{"id":1,"jsonrpc":"2.0","params":["$(smart_contract_address)"],"method":"eth_getTransactionReceipt"}' | jq .blockNumber)
+	# BLOCK_NUMBER := $(shell curl --request POST \
+	# 	--url $(ethereum_node_url) \
+	# 	--header 'accept: application/json' \
+	# 	--header 'content-type: application/json' \
+	# 	--data '{"id":1,"jsonrpc":"2.0","params":["$(smart_contract_address)"],"method":"eth_getTransactionReceipt"}' | jq .blockNumber)
+	BLOCK_NUMBER := $(shell make -c vendor/get_smart_contract_creation_block run)
 ifneq ($(BLOCK_NUMBER), 'null')
 	@yq e -i '.dataSources[0].source.startBlock = "$(BLOCK_NUMBER)"' subgraph.yaml
 	@yq e -i '.dataSources[0].network = "$(network)"' subgraph.yaml
@@ -47,7 +48,7 @@ else
 endif
 
 .PHONY: deploy
-deploy: build test ## Deploy smart contracts to the given network(default: sepolia)
+deploy: prepare build test ## Deploy smart contracts to the given network(default: sepolia)
 ifneq ($(graph_node), '')
 	@graph create -g $(graph_node) dex_subgraph 
 	@graph deploy -g $(graph_node) --product hosted_service --version-label  0.0.1 dex_subgraph
