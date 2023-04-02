@@ -1,4 +1,6 @@
 graph_node := $(or $(graph_node), '')
+graph_index := $(or $(graph_index), '')
+ethereum_node_url := $(or $(ethereum_node_url), '')
 network := $(or $(network), 'sepolia')
 smart_contract_address := $(or $(smart_contract_address), '')
 
@@ -10,7 +12,7 @@ help:
 .PHONY: prepare
 prepare: ## Install prerequisites
 	@apt update
-	@apt install nodejs npm yq -y
+	@apt install nodejs npm yq jq -y
 
 	@npm install -g @graphprotocol/graph-cli
 	@npm install
@@ -22,10 +24,24 @@ test: ## Run tests
 .PHONY: build
 build: ## Build smart contracts
 ifneq ($(smart_contract_address), '')
+ifneq ($(ethereum_node_url), '')
+	BLOCK_NUMBER := $(shell curl --request POST \
+		--url $(ethereum_node_url) \
+		--header 'accept: application/json' \
+		--header 'content-type: application/json' \
+		--data '{"id":1,"jsonrpc":"2.0","params":["$(smart_contract_address)"],"method":"eth_getTransactionReceipt"}' | jq .blockNumber)
+ifneq ($(BLOCK_NUMBER), 'null')
+	@yq e -i '.dataSources[0].source.startBlock = "$(BLOCK_NUMBER)"' subgraph.yaml
 	@yq e -i '.dataSources[0].network = "$(network)"' subgraph.yaml
 	@yq e -i '.dataSources[0].source.address = "$(smart_contract_address)"' subgraph.yaml
 	@graph codegen
 	@graph build
+else
+	@echo "Block number of smart contract is not valid"
+endif
+else
+	@echo "Ethereum node URL is required to be specified with the help of 'ethereum_node_url' parameter"
+endif
 else
 	@echo "Smart contract address is required to be specified with the help of 'smart_contract_address' parameter"
 endif
