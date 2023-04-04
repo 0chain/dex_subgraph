@@ -18,6 +18,8 @@ prepare: ## Install prerequisites
 	@wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
 	@chmod a+x /usr/local/bin/yq
 
+	$(MAKE) -C vendor/tools/get_smart_contract_creation_block build
+
 	@npm install -g @graphprotocol/graph-cli
 	@npm install
 	
@@ -29,7 +31,6 @@ test: ## Run tests
 build: prepare ## Build subgraph
 ifneq ($(smart_contract_address), '')
 ifneq ($(ethereum_node_url), '')
-	@make -C vendor/get_smart_contract_creation_block build
 	$(eval BLOCK_NUMBER = $(shell ./vendor/tools/get_smart_contract_creation_block/get_smart_contract_creation_block --ethereum_node_url=$(ethereum_node_url) \
 		--smart_contract_address=$(smart_contract_address)))
 ifeq ($(shell echo $(BLOCK_NUMBER) | grep -E "^[0-9]+$$"),$(BLOCK_NUMBER))	
