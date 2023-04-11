@@ -1,6 +1,6 @@
 module dex_subgraph/vendor/get_smart_contract_creation_block
 
-go 1.18
+go 1.19
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
