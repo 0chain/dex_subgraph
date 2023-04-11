@@ -4,6 +4,7 @@ ethereum_node_url := $(or $(ethereum_node_url), '')
 network := $(or $(network), 'goerli')
 smart_contract_address := $(or $(smart_contract_address), '')
 
+SHELL := /bin/bash
 .ONESHELL:
 
 .PHONY: help
@@ -13,11 +14,6 @@ help:
 
 .PHONY: prepare
 prepare: ## Install prerequisites
-	@apt update
-	@apt install nodejs npm jq -y
-	@wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-	@chmod a+x /usr/local/bin/yq
-
 	$(MAKE) -C vendor/tools/get_smart_contract_creation_block build
 
 	@npm install -g @graphprotocol/graph-cli
