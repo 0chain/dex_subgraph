@@ -1,31 +1,13 @@
 import {
-  AuthorizersTransferred as AuthorizersTransferredEvent,
   Burned as BurnedEvent,
   Minted as MintedEvent,
   OwnershipTransferred as OwnershipTransferredEvent
 } from "../generated/0chain/dex/Bridge"
 import {
-  AuthorizersTransferred,
   Burned,
   Minted,
   OwnershipTransferred
 } from "../generated/schema"
-
-export function handleAuthorizersTransferred(
-  event: AuthorizersTransferredEvent
-): void {
-  let entity = new AuthorizersTransferred(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.previousAuthorizers = event.params.previousAuthorizers
-  entity.newAuthorizers = event.params.newAuthorizers
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
 
 export function handleBurned(event: BurnedEvent): void {
   let entity = new Burned(
