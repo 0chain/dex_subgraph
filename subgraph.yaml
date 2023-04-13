@@ -7,7 +7,7 @@ features:
   - fullTextSearch
   - ipfsOnEthereumContracts
 dataSources:
-  - kind: ethereum/contract
+  - kind: ethereum
     name: 0chain/dex
     network: "" # Should be set by Makefile script
     source:
