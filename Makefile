@@ -1,5 +1,6 @@
 graph_deploy := $(or $(graph_deploy), '')
 graph_index := $(or $(graph_index), '')
+graph_ipfs := $(or $(graph_ipfs), 'https://ipfs.network.thegraph.com')
 ethereum_node_url := $(or $(ethereum_node_url), '')
 network := $(or $(network), 'goerli')
 smart_contract_address := $(or $(smart_contract_address), '')
@@ -50,7 +51,7 @@ deploy: build test ## Deploy subgraph
 ifneq ($(graph_deploy), '')
 ifneq ($(graph_index), '')
 	@graph create -g $(graph_deploy) dex_subgraph 
-	@graph deploy -g $(graph_deploy) --product hosted-service --version-label 0.0.1 dex_subgraph
+	@graph deploy -g $(graph_deploy) -i $(graph_ipfs) --product hosted-service --version-label 0.0.1 dex_subgraph
 	@./vendor/bin/wait_until_synced.sh $(graph_index) "dex_subgraph"
 else
 	@echo "Graph node index URL is required to be specified with the help of 'graph_index' parameter"
