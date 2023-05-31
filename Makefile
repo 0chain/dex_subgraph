@@ -4,7 +4,7 @@ graph_ipfs := $(or $(graph_ipfs), 'https://ipfs.network.thegraph.com')
 ethereum_node_url := $(or $(ethereum_node_url), '')
 network := $(or $(network), 'goerli')
 smart_contract_address := $(or $(smart_contract_address), '')
-skip_sync := $(or $(skip_sync), 'false')
+skip_sync := $(or $(skip_sync), false)
 
 SHELL := /bin/bash
 .ONESHELL:
@@ -53,7 +53,7 @@ ifneq ($(graph_deploy), '')
 ifneq ($(graph_index), '')
 	@graph create -g $(graph_deploy) dex_subgraph 
 	@graph deploy -g $(graph_deploy) -i $(graph_ipfs) --product hosted-service --version-label 0.0.1 dex_subgraph
-ifneq ($(skip_sync), 'true')
+ifneq ($(skip_sync), true)
 	@./vendor/bin/wait_until_synced.sh $(graph_index) "dex_subgraph"
 endif
 else
