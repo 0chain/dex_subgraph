@@ -41,18 +41,25 @@ func NewContractFinder(provider string) (*ContractFinder, error) {
 
 func (c *ContractFinder) codeLen(contractAddr string, blockNumber int64) int {
 	ticker := time.NewTicker(time.Millisecond * 500)
-	for range ticker.C {
-		ticker.Stop()
+	load := time.NewTicker(time.Millisecond * 100)
+	timeout := time.After(time.Second * 10)
 
-		data, err := c.client.CodeAt(context.Background(), common.HexToAddress(contractAddr), big.NewInt(blockNumber))
-		if err == nil {
-			return len(data)
+	for {
+		select {
+		case <-ticker.C:
+			ticker.Stop()
+
+			data, err := c.client.CodeAt(context.Background(), common.HexToAddress(contractAddr), big.NewInt(blockNumber))
+			if err == nil {
+				return len(data)
+			}
+
+			ticker.Reset(time.Millisecond * 500)
+		case <-timeout:
+			return 0
+		case <-load.C:
 		}
-
-		ticker.Reset(time.Millisecond * 500)
 	}
-
-	return 0
 }
 
 func (c *ContractFinder) GetContractCreationBlock(contractAddr string) int64 {
