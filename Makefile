@@ -26,25 +26,29 @@ test: ## Run tests
 	@graph test . -v 0.5.4
 
 .PHONY: build
-build: prepare ## Build subgraph
+build: ## Build subgraph
 ifneq ($(smart_contract_address), '')
 ifneq ($(ethereum_node_url), '')
 	$(eval BLOCK_NUMBER = $(shell ./vendor/tools/get_smart_contract_creation_block/get_smart_contract_creation_block --ethereum_node_url=$(ethereum_node_url) \
 		--smart_contract_address=$(smart_contract_address)))
-ifeq ($(shell echo $(BLOCK_NUMBER) | grep -E "^[0-9]+$$"),$(BLOCK_NUMBER))	
+	
+	$(eval BLOCK_NUMBER_VALIDATION = $(shell echo $(BLOCK_NUMBER) | grep -Eq '^[0-9]+$\' && echo 1 || echo 0))
+	
+	@if [ "$(BLOCK_NUMBER_VALIDATION)" = "0" ]; then \
+        printf 'Block number of smart contract is not valid\n' >&2; \
+        exit 1; \
+    fi
+
 	@yq e -i '.dataSources[0].source.startBlock = $(BLOCK_NUMBER)' subgraph.yaml
 	@yq e -i '.dataSources[0].network = "$(network)"' subgraph.yaml
 	@yq e -i '.dataSources[0].source.address = "$(smart_contract_address)"' subgraph.yaml
 	@graph codegen
 	@graph build
 else
-	@echo "Block number of smart contract is not valid"
+	$(error "Ethereum node URL is required to be specified with the help of 'ethereum_node_url' parameter")
 endif
 else
-	@echo "Ethereum node URL is required to be specified with the help of 'ethereum_node_url' parameter"
-endif
-else
-	@echo "Smart contract address is required to be specified with the help of 'smart_contract_address' parameter"
+	$(error "Smart contract address is required to be specified with the help of 'smart_contract_address' parameter")
 endif
 
 .PHONY: deploy
@@ -55,10 +59,11 @@ ifneq ($(graph_index), '')
 	@graph deploy -g $(graph_deploy) -i $(graph_ipfs) --product hosted-service --version-label 0.0.1 dex_subgraph
 ifneq ($(skip_sync), true)
 	@./vendor/bin/wait_until_synced.sh $(graph_index) "dex_subgraph"
+	@echo "Subgraph synchronization has been started, please wait..."
 endif
 else
-	@echo "Graph node index URL is required to be specified with the help of 'graph_index' parameter"
+	$(error "Graph node index URL is required to be specified with the help of 'graph_index' parameter")
 endif
 else
-	@echo "Graph node deploy URL is required to be specified with the help of 'graph_deploy' parameter"
+	$(error "Graph node deploy URL is required to be specified with the help of 'graph_deploy' parameter")
 endif
