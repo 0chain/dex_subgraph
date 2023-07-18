@@ -26,7 +26,7 @@ test: ## Run tests
 	@graph test . -v 0.5.4
 
 .PHONY: build
-build: ## Build subgraph
+build: prepare ## Build subgraph
 ifneq ($(smart_contract_address), '')
 ifneq ($(ethereum_node_url), '')
 	$(eval BLOCK_NUMBER = $(shell ./vendor/tools/get_smart_contract_creation_block/get_smart_contract_creation_block --ethereum_node_url=$(ethereum_node_url) \
