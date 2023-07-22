@@ -8,8 +8,8 @@
     "deploy": "graph deploy"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.38.0",
-    "@graphprotocol/graph-ts": "0.29.1"
+    "@graphprotocol/graph-cli": "^0.53.0",
+    "@graphprotocol/graph-ts": "^0.31.0"
   },
   "devDependencies": {
     "matchstick-as": "0.5.0"
