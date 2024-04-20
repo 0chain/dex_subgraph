@@ -58,7 +58,7 @@ func NewContractFinder(provider string) (*ContractFinder, error) {
 
 	var latestBlockInt big.Int
 
-	latestBlockRawHex, _ := strings.CutPrefix(latestBlockRaw, "0x")
+	latestBlockRawHex := strings.TrimPrefix(latestBlockRaw, "0x")
 
 	latestBlockInt.SetString(latestBlockRawHex, 16)
 
