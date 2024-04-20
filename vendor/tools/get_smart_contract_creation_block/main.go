@@ -2,15 +2,23 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"math/big"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/ybbus/jsonrpc/v3"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+)
+
+var (
+	ErrLatestBlockNumberRetrieval = errors.New("err happened retrieving latest block number")
 )
 
 var (
@@ -28,14 +36,35 @@ func NewContractFinder(provider string) (*ContractFinder, error) {
 	if err != nil {
 		return nil, err
 	}
-	latestBlock, err := conn.BlockByNumber(context.Background(), nil)
+
+	rawClient := jsonrpc.NewClient(provider)
+
+	var resp *jsonrpc.RPCResponse
+
+	resp, err = rawClient.Call(
+		context.Background(), "eth_blockNumber")
 	if err != nil {
 		return nil, err
 	}
 
+	if resp.Error != nil {
+		return nil, errors.New(resp.Error.Error())
+	}
+
+	latestBlockRaw, ok := resp.Result.(string)
+	if !ok {
+		return nil, ErrLatestBlockNumberRetrieval
+	}
+
+	var latestBlockInt big.Int
+
+	latestBlockRawHex, _ := strings.CutPrefix(latestBlockRaw, "0x")
+
+	latestBlockInt.SetString(latestBlockRawHex, 16)
+
 	return &ContractFinder{
 		client:      conn,
-		latestBlock: latestBlock.Number().Int64(),
+		latestBlock: latestBlockInt.Int64(),
 	}, nil
 }
 
