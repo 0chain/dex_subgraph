@@ -11,6 +11,4 @@ help:
 
 .PHONY: build
 build: ## Build script
-	@go get github.com/ethereum/go-ethereum/common
-	@go get github.com/ethereum/go-ethereum/ethclient
 	@go build -o get_smart_contract_creation_block main.go 
