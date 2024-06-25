@@ -18,7 +18,7 @@ help:
 prepare: ## Install prerequisites
 	$(MAKE) -C vendor/tools/get_smart_contract_creation_block build
 
-	@npm install -g @graphprotocol/graph-cli
+	@npm install -g @graphprotocol/graph-cli@0.53.0
 	@npm install
 	
 .PHONY: test
